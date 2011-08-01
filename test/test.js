@@ -76,6 +76,67 @@ module.exports = {
     client.connect('node_cassandra_test');
   },
 
+  'test uuid types': function(beforeExit) {
+    var client = new cassandra.Client('127.0.0.1:9160');
+    client.on('error', function(err) {
+      assert.isNotNull(err);
+      assert.equal(err.message, 'Column Family NotExistCF does not exist.');
+      client.close();
+    });
+    client.connect('node_cassandra_test');
+    cf = client.getColumnFamily('LexUUID');
+    cfs = client.getColumnFamily('LexSuper');
+
+    cf.set('todd', {
+      "test": 1,
+    }, function(err) {
+      assert.isNotNull(err);
+      assert.equal(err.name, 'InvalidRequestException');
+      console.log(err);
+    });
+
+    // test auto uuid generation
+    var key = "6dd275dd-e598-edd4-4d77-3bf8446b61b7"
+    cf.set(key, {
+      "00000000-0000-0000-0000-000000000000": "test me",
+    }, function(err, res) {
+      assert.isNull(err);
+      console.log(err, res);
+    });
+
+    cf.set(key, {
+      "00000000000000000000123456789012": "test2 set",
+    }, function(err, res) {
+      assert.isNull(err);
+      console.log(err, res);
+    });
+
+    cf.get(key, "00000000-0000-0000-0000-000000000002",
+      function(err, res) {
+          assert.isNull(err);
+          assert.deepEqual(res, {}, "not empty result");
+      }
+    );
+    // read, rewrite test
+    cf.get(key, "00000000-0000-0000-0000-123456789012",
+      function(err, res) {
+          assert.isNull(err);
+          console.log("get2", err, res);
+          res['00000000-0000-0000-0000-123456789012'] = 'rewrite';
+          cf.set(key, res, function(err) {
+              assert.isNull(err, "can't write back");
+              cf.get(key, "00000000-0000-0000-0000-123456789012", function(err, result2) {
+                  assert.isNull(err);
+                  console.log("get3", err, res);
+                  assert.deepEqual(result2, res);
+                }
+              );
+            }
+          );
+      }
+    );
+
+  },
   /*
   'test if truncate works': function() {
     // connect to cassandra

@@ -1,12 +1,14 @@
 {
   "name": "cassandra",
   "description": "cassandra client for node.js",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Yuki Morishita <mor.yuki@gmail.com>",
+  "contributors": ["Daniel Poelzleithner <git@poelzi.org>"],
   "main": "./lib/cassandra",
   "lib" : "gen-nodejs",
   "dependencies" : {
-    "thrift": "*"
+    "thrift": "*",
+    "guid": "*"
   },
   "engines": { "node": ">= 0.3" }
 }

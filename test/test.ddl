@@ -7,3 +7,5 @@ use node_cassandra_test;
 
 create column family Standard with column_type = 'Standard' and comparator = 'UTF8Type';
 create column family Super with column_type = 'Super' and comparator = 'UTF8Type' and subcomparator = 'UTF8Type';
+create column family LexUUID with column_type = 'Standard' and comparator = 'LexicalUUIDType';
+create column family LexSuper with column_type = 'Super' and comparator = 'LexicalUUIDType' and subcomparator = 'TimeUUIDType';
